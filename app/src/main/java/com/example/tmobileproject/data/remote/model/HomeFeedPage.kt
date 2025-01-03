@@ -5,5 +5,5 @@ import com.google.gson.annotations.SerializedName
 
 data class HomeFeedPage(
     @SerializedName("cards")
-    val cards: List<Card>? = null
+    val cards: List<Card>
 )

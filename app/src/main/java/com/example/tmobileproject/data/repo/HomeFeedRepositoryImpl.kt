@@ -15,10 +15,13 @@ class HomeFeedRepositoryImpl @Inject constructor(
     private val dao: CardDao
 ) : HomeFeedRepository {
 
+    // This function gets the local list of cards stored in the database.
     private suspend fun getLocalListOfCards(): List<Card> {
+        //Get cards  from local database and map data
        return dao.getCards().map { it.toCard() }
     }
 
+    // This function gets the data either from local or remote.
     override suspend fun getHomeFeed(): Resource<HomeFeedPage?> {
         return try {
             //Api call
@@ -28,17 +31,30 @@ class HomeFeedRepositoryImpl @Inject constructor(
                 val remoteBody = response.body()?.let { body ->
                     // Map the cards and save them to the database
                     body.page?.cards?.map { it.toCardDto() }?.let { cards ->
+                        dao.clearCardDatabase()
                         dao.upsertCardList(cards)
                     }
                     // Return the page from the response as HomeFeedPage
                     body.page
                 }
-                // If the response is valid, return the data in Resource.Success
-                Log.d("HomeFeedRepositoryImpl", "Data fetched successfully: ${response.body()?.page}")
-                Resource.Success(remoteBody) // Returning HomeFeedPage or null if no data
+                // If remote body is not null, return remote data
+                if (remoteBody != null) {
+                    Log.d("HomeFeedRepositoryImpl", "Remote data fetched successfully.")
+                    Resource.Success(remoteBody)
+                } else {
+                    // If remote data is null, return local data
+                    val localCards = getLocalListOfCards()
+                    Log.d("HomeFeedRepositoryImpl", "Local data fetched successfully. $localCards")
+                    if (localCards.isNotEmpty()) {
+                        Resource.Success(HomeFeedPage(localCards))
+                    } else {
+                        Resource.Error("No data found.")
+                    }
+                }
             } else {
                 // If the response is not successful and data has been cached returned data else return error
                 val localCards = getLocalListOfCards()
+                Log.d("HomeFeedRepositoryImpl", "Local data fetched successfully. $localCards")
                 if(localCards.isNotEmpty()){
                     Resource.Success(HomeFeedPage(localCards))
 
@@ -47,8 +63,15 @@ class HomeFeedRepositoryImpl @Inject constructor(
                 }
             }
         } catch (exception: Exception) {
-            // Catching any exceptions (e.g., network error) and returning an error
-            Resource.Error(exception.message ?: "An unexpected error occurred")
+            // Get local data if is not empty else return error
+            val localCards = getLocalListOfCards()
+            if (localCards.isNotEmpty()) {
+                Resource.Success(HomeFeedPage(localCards))
+            } else {
+                // Catching any exceptions (e.g., network error) and returning an error
+                Resource.Error(exception.message ?: "An unexpected error occurred")
+            }
+
         }
     }
 

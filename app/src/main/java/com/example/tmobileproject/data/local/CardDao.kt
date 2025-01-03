@@ -14,4 +14,8 @@ interface CardDao {
 
     @Query("SELECT * FROM cardentity")
     suspend fun  getCards(): List<CardEntity>
+
+
+    @Query("DELETE FROM cardentity")
+    suspend fun clearCardDatabase()
 }

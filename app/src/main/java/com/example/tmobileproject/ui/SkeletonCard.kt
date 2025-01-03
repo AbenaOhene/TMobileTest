@@ -26,9 +26,10 @@ fun SkeletonLoader() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .statusBarsPadding()
+            .padding(20.dp)
     ) {
-        repeat(3) { // Repeat for 2 cards as an example
+        repeat(2) { // Repeat for 2 cards as an example
             SkeletonCard()
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -66,7 +67,7 @@ fun SkeletonCard() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(500.dp)
                 .shimmerEffect()
         )
 

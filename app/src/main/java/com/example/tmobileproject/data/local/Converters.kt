@@ -26,7 +26,7 @@ class Converters {
     fun toCardX(cardXJson: String?): CardX? {
         return cardXJson?.let {
             val type = object : TypeToken<CardX>() {}.type
-            gson.fromJson<CardX>(it, type)
+            gson.fromJson(it, type)
         }
     }
 
@@ -40,7 +40,7 @@ class Converters {
     fun toDescription(descriptionJson: String?): Description? {
         return descriptionJson?.let {
             val type = object : TypeToken<Description>() {}.type
-            gson.fromJson<Description>(it, type)
+            gson.fromJson(it, type)
         }
     }
 
@@ -54,7 +54,7 @@ class Converters {
     fun toImage(imageJson: String?): Image? {
         return imageJson?.let {
             val type = object : TypeToken<Image>() {}.type
-            gson.fromJson<Image>(it, type)
+            gson.fromJson(it, type)
         }
     }
 
@@ -68,7 +68,7 @@ class Converters {
     fun toSize(sizeJson: String?): Size? {
         return sizeJson?.let {
             val type = object : TypeToken<Size>() {}.type
-            gson.fromJson<Size>(it, type)
+            gson.fromJson(it, type)
         }
     }
 
@@ -82,7 +82,7 @@ class Converters {
     fun toTitle(titleJson: String?): Title? {
         return titleJson?.let {
             val type = object : TypeToken<Title>() {}.type
-            gson.fromJson<Title>(it, type)
+            gson.fromJson(it, type)
         }
     }
 
@@ -96,17 +96,8 @@ class Converters {
     fun toAttributes(attributesJson: String?): Attributes? {
         return attributesJson?.let {
             val type = object : TypeToken<Attributes>() {}.type
-            gson.fromJson<Attributes>(it, type)
+            gson.fromJson(it, type)
         }
     }
 
-    @TypeConverter
-    fun fromByteBuffer(byteBuffer: ByteBuffer?): ByteArray? {
-        return byteBuffer?.array()
-    }
-
-    @TypeConverter
-    fun toByteBuffer(byteArray: ByteArray?): ByteBuffer? {
-        return byteArray?.let { ByteBuffer.wrap(it) }
-    }
 }

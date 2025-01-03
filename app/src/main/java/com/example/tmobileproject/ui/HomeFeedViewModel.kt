@@ -28,14 +28,13 @@ class HomeFeedViewModel @Inject constructor(
     }
 
      fun fetchHomeFeed() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _state.value = _state.value.copy(showLoading = true)
 
             // Call the repository to get the data
             when (val result = repository.getHomeFeed()) {
                 is Resource.Success -> {
-                    Log.d("HomeFeedViewModel", "Data fetched successfully: ${result.data?.cards}")
-                    val homeFeedPage = result.data ?: HomeFeedPage()
+                    val homeFeedPage = result.data ?: HomeFeedPage(emptyList())
                     _state.value = _state.value.copy(
                         showLoading = false,
                         homeFeedPage = homeFeedPage,
@@ -45,7 +44,7 @@ class HomeFeedViewModel @Inject constructor(
                 is Resource.Error -> {
                     _state.value = _state.value.copy(
                         showLoading = false,
-                        homeFeedPage = HomeFeedPage(),
+                        homeFeedPage = HomeFeedPage(cards = emptyList()),
                         showError = false,
                     )
                 }
@@ -57,7 +56,7 @@ class HomeFeedViewModel @Inject constructor(
 }
 
 data class HomeFeedState (
-    val homeFeedPage: HomeFeedPage = HomeFeedPage(),
+    val homeFeedPage: HomeFeedPage = HomeFeedPage(cards = emptyList()),
     val showLoading: Boolean = false,
     val showError: Boolean = false,
 )
